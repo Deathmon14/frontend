@@ -1,6 +1,7 @@
 // src/App.tsx
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User, Calendar, Package, Settings, LogOut, Menu, X, Bell, ShieldCheck } from 'lucide-react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, orderBy, onSnapshot, updateDoc } from 'firebase/firestore';
@@ -9,7 +10,10 @@ import LoginPage from './components/LoginPage';
 import ClientDashboard from './components/ClientDashboard';
 import VendorDashboard from './components/VendorDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import { LoadingScreen } from './components/ui/Loading';
+import { ThemeToggle } from './components/ThemeToggle';
 import { User as UserType, Notification } from './types';
+import { fadeInUp, fadeInDown } from './lib/utils';
 
 function App() {
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
