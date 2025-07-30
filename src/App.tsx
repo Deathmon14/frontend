@@ -134,17 +134,7 @@ function App() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
-            <Calendar className="w-8 h-8 text-white" />
-          </div>
-          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto"></div>
-          <p className="text-neutral-600 mt-4">Loading KAISRI...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!currentUser) {
@@ -152,107 +142,205 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <header className="bg-white/90 backdrop-blur-sm border-b border-neutral-200 sticky top-0 z-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900">
+      <motion.header 
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="glass-strong border-b border-white/20 dark:border-white/10 sticky top-0 z-50"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center shadow-md">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+            <motion.div 
+              {...fadeInLeft}
+              className="flex items-center space-x-3"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-10 h-10 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl flex items-center justify-center shadow-lg"
+              >
+                <Calendar className="w-6 h-6 text-white" />
+              </motion.div>
+              <h1 className="text-2xl font-bold text-gradient">
                 KAISRI
               </h1>
-            </div>
+            </motion.div>
+
             <div className="hidden md:flex items-center space-x-4">
-              <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-neutral-100 text-neutral-700">
-                {currentUser && getUserIcon()} {/* Ensure currentUser exists before calling getUserIcon */}
-                <span className="text-sm font-medium">
-                  {currentUser.name}
-                </span>
-                <span className="px-2 py-1 text-xs font-semibold bg-primary-100 text-primary-800 rounded-full capitalize">
-                  {currentUser.role}
-                </span>
-              </div>
+              {/* User Profile Section */}
+              <motion.div 
+                {...fadeInUp}
+                className="flex items-center space-x-3 px-4 py-2 rounded-xl glass border border-white/20 dark:border-white/10"
+              >
+                <div className="flex items-center space-x-2 text-neutral-700 dark:text-neutral-200">
+                  {currentUser && getUserIcon()}
+                  <span className="font-medium">
+                    {currentUser.name}
+                  </span>
+                  <motion.span 
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1 text-xs font-semibold bg-primary-500/20 text-primary-700 dark:text-primary-300 rounded-full capitalize border border-primary-500/30"
+                  >
+                    {currentUser.role}
+                  </motion.span>
+                </div>
+              </motion.div>
 
+              {/* Notifications */}
               <div className="relative">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className="relative p-2 rounded-full hover:bg-neutral-100 transition-colors"
+                  className="relative p-3 rounded-xl glass border border-white/20 dark:border-white/10 hover:bg-white/10 transition-colors"
                 >
-                  <Bell className="w-5 h-5 text-neutral-600" />
+                  <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white"
+                    >
+                      {unreadCount}
+                    </motion.span>
                   )}
-                </button>
+                </motion.button>
 
-                {isNotificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border z-10 max-h-96 overflow-y-auto">
-                    <div className="p-4 border-b border-neutral-200">
-                      <h4 className="font-semibold text-neutral-800">Notifications</h4>
-                    </div>
-                    {notifications.length > 0 ? (
-                      notifications.map(n => (
-                        <div
-                          key={n.id}
-                          onClick={() => handleMarkAsRead(n.id)}
-                          className={`p-4 border-b border-neutral-100 last:border-b-0 hover:bg-neutral-50 cursor-pointer ${!n.isRead ? 'bg-blue-50' : ''}`}
-                        >
-                          <p className="text-sm text-neutral-700">{n.message}</p>
-                          <p className="text-xs text-neutral-400 mt-1">
-                            {n.createdAt?.seconds ? new Date(n.createdAt.seconds * 1000).toLocaleString() : 'No date'}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-neutral-500">
-                        <p>You have no notifications.</p>
+                <AnimatePresence>
+                  {isNotificationsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-80 card-glass border border-white/20 dark:border-white/10 rounded-2xl z-10 max-h-96 overflow-hidden"
+                    >
+                      <div className="p-4 border-b border-white/10">
+                        <h4 className="font-semibold text-neutral-800 dark:text-neutral-200">Notifications</h4>
                       </div>
-                    )}
-                  </div>
-                )}
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                          notifications.map(n => (
+                            <motion.div
+                              key={n.id}
+                              whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+                              onClick={() => handleMarkAsRead(n.id)}
+                              className={`p-4 border-b border-white/5 last:border-b-0 cursor-pointer transition-colors ${!n.isRead ? 'bg-primary-500/10' : ''}`}
+                            >
+                              <p className="text-sm text-neutral-700 dark:text-neutral-200">{n.message}</p>
+                              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                                {n.createdAt?.seconds ? new Date(n.createdAt.seconds * 1000).toLocaleString() : 'No date'}
+                              </p>
+                            </motion.div>
+                          ))
+                        ) : (
+                          <div className="p-6 text-center text-neutral-500 dark:text-neutral-400">
+                            <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p>No notifications yet</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <button
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
+              {/* Logout Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 text-neutral-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 glass rounded-xl border border-white/20 dark:border-white/10 hover:bg-red-500/10 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="text-sm font-medium">Logout</span>
-              </button>
+              </motion.button>
             </div>
-            <button
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="md:hidden p-2 rounded-xl glass border border-white/20 dark:border-white/10 transition-colors"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+              <AnimatePresence mode="wait">
+                {mobileMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="w-5 h-5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-neutral-200">
-              <div className="flex items-center space-x-2 px-3 py-2 mb-3">
-                {currentUser && getUserIcon()} {/* Ensure currentUser exists before calling getUserIcon */}
-                <span className="text-sm font-medium text-neutral-700">
-                  {currentUser.name}
-                </span>
-                <span className="px-2 py-1 text-xs font-medium bg-primary-100 text-primary-700 rounded-full capitalize">
-                  {currentUser.role}
-                </span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-2 w-full px-3 py-2 text-neutral-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="md:hidden py-4 border-t border-white/20 dark:border-white/10 overflow-hidden"
               >
-                <LogOut className="w-4 h-4" />
-                <span className="text-sm font-medium">Logout</span>
-              </button>
-            </div>
-          )}
+                <div className="flex items-center space-x-3 px-3 py-3 mb-4 rounded-xl glass">
+                  {currentUser && getUserIcon()}
+                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+                    {currentUser.name}
+                  </span>
+                  <span className="px-2 py-1 text-xs font-medium bg-primary-500/20 text-primary-700 dark:text-primary-300 rounded-full capitalize">
+                    {currentUser.role}
+                  </span>
+                </div>
+                
+                <div className="space-y-2">
+                  <ThemeToggle showLabel className="w-full justify-start px-3 py-2" />
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 w-full px-3 py-2 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 rounded-xl glass transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm font-medium">Logout</span>
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </header>
-      <main className="flex-1">
+      </motion.header>
+
+      <motion.main 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex-1"
+      >
         {renderDashboard()}
-      </main>
+      </motion.main>
     </div>
   );
 }
