@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, orderBy, onSnapshot, updateDoc } from 'firebase/firestore';
 import { auth, db } from './lib/firebase';
 import LoginPage from './components/LoginPage';
+import { DemoLoginPage } from './components/DemoLoginPage';
 import ClientDashboard from './components/ClientDashboard';
 import VendorDashboard from './components/VendorDashboard';
 import AdminDashboard from './components/AdminDashboard';
