@@ -71,6 +71,29 @@ function App() {
 
   useEffect(() => {
     if (currentUser) {
+      // Demo mode - create sample notifications
+      if (!db) {
+        const demoNotifications = [
+          {
+            id: '1',
+            userId: currentUser.uid,
+            message: 'Welcome to KAISRI! Your account is ready.',
+            isRead: false,
+            createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600 }
+          },
+          {
+            id: '2',
+            userId: currentUser.uid,
+            message: 'New event packages are now available!',
+            isRead: false,
+            createdAt: { seconds: Math.floor(Date.now() / 1000) - 7200 }
+          }
+        ];
+        setNotifications(demoNotifications);
+        return;
+      }
+
+      // Real Firebase query
       const q = query(
         collection(db, 'notifications'),
         where('userId', '==', currentUser.uid),
