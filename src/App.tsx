@@ -23,6 +23,23 @@ function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
+    // Check if Firebase is available
+    if (!auth) {
+      // Demo mode - simulate a user login after 2 seconds
+      const timer = setTimeout(() => {
+        setCurrentUser({
+          uid: 'demo-user-123',
+          name: 'Demo User',
+          email: 'demo@example.com',
+          role: 'client',
+          status: 'active'
+        });
+        setLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    // Real Firebase auth
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
