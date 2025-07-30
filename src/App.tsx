@@ -179,7 +179,7 @@ function App() {
   }
 
   if (!currentUser) {
-    return <LoginPage onLogin={setCurrentUser} />;
+    return auth ? <LoginPage onLogin={setCurrentUser} /> : <DemoLoginPage onLogin={setCurrentUser} />;
   }
 
   return (
