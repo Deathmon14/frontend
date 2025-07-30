@@ -42,6 +42,13 @@ export const fadeInRight = {
   transition: { duration: 0.3, ease: 'easeOut' }
 };
 
+export const slideInRight = {
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: 30 },
+  transition: { duration: 0.6, ease: 'easeOut' }
+};
+
 export const scaleIn = {
   initial: { opacity: 0, scale: 0.9 },
   animate: { opacity: 1, scale: 1 },
