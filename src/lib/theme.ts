@@ -1,6 +1,5 @@
 // Theme management utilities
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 interface ThemeStore {
   theme: 'light' | 'dark' | 'system';
@@ -9,32 +8,20 @@ interface ThemeStore {
   toggleTheme: () => void;
 }
 
-export const useTheme = create<ThemeStore>()(
-  persist(
-    (set, get) => ({
-      theme: 'system',
-      resolvedTheme: 'light',
-      setTheme: (theme) => {
-        set({ theme });
-        applyTheme(theme);
-      },
-      toggleTheme: () => {
-        const current = get().resolvedTheme;
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        set({ theme: newTheme, resolvedTheme: newTheme });
-        applyTheme(newTheme);
-      },
-    }),
-    {
-      name: 'kaisri-theme',
-      onRehydrate: (state) => {
-        if (state) {
-          applyTheme(state.theme);
-        }
-      },
-    }
-  )
-);
+export const useTheme = create<ThemeStore>()((set, get) => ({
+  theme: 'system',
+  resolvedTheme: 'light',
+  setTheme: (theme) => {
+    set({ theme });
+    applyTheme(theme);
+  },
+  toggleTheme: () => {
+    const current = get().resolvedTheme;
+    const newTheme = current === 'light' ? 'dark' : 'light';
+    set({ theme: newTheme, resolvedTheme: newTheme });
+    applyTheme(newTheme);
+  },
+}));
 
 function applyTheme(theme: 'light' | 'dark' | 'system') {
   const root = window.document.documentElement;
